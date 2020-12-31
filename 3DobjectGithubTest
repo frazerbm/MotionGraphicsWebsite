@@ -1,0 +1,138 @@
+!DOCTYPE html>
+<html lang="en">
+<title>MotionVI</title>
+<meta charset="UTF-8">
+
+<body>
+    <script type="module" src="/three.js-master/build/three.min.js"></script>
+    <script type="module" src="https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js"></script>
+    <script type="module" src="https://unpkg.com/three/examples/jsm/controls/OrbitControls.js"></script>
+
+    <div>
+        <script type="module">
+            let scene, camera, renderer, car, cube, clock, container;
+
+            import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+            import { OrbitControls } from "./three.js-master/examples/jsm/controls/OrbitControls.js";
+            import { GLTFLoader } from "./three.js-master/examples/jsm/loaders/GLTFLoader.js";
+            import { DRACOLoader } from "./three.js-master/examples/jsm/loaders/DRACOLoader.js";
+            import { RGBELoader } from "./three.js-master/examples/jsm/loaders/RGBELoader.js";
+
+            function init() {
+
+                var scene = this._scene = new THREE.Scene();
+
+                var camera = this._camera = new THREE.PerspectiveCamera(45, this._container.offsetWidth / this._container.offsetHeight, 1e-5, 1e10);
+
+                scene.add(camera);
+
+                var hemispheric = new THREE.HemisphereLight(0xffffff, 0x222222, 0.5);
+                scene.add(hemispheric);
+
+                var renderer = this._renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+                renderer.setClearColor(0x222222);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.outputEncoding = THREE.sRGBEncoding;
+
+                this._container.appendChild(renderer.domElement);
+
+                var loader = new GLTFLoader();
+
+                var cameraPos = new THREE.Vector3(-0.2, 0.4, 1.4);
+                var orbitControls = this._orbitControls = new OrbitControls(this._camera, renderer.domElement);
+
+                loader.parse(gltfContent, rootPath, data => {
+                    var gltf = data;
+                    var object = gltf.scene;
+
+
+                    mainViewModel.hasBackground(true);
+                    function applyBackground(showBackground) {
+                        scene.background = showBackground ? envMap : null;
+                    }
+                    applyBackground(mainViewModel.showBackground());
+                    this._backgroundSubscription = mainViewModel.showBackground.subscribe(applyBackground);
+
+                    // Center the model on screen based on bounding box information.
+                    object.updateMatrixWorld();
+                    var boundingBox = new THREE.Box3().setFromObject(object);
+                    var modelSizeVec3 = new THREE.Vector3();
+                    boundingBox.getSize(modelSizeVec3);
+                    var modelSize = modelSizeVec3.length();
+                    var modelCenter = new THREE.Vector3();
+                    boundingBox.getCenter(modelCenter);
+
+                    // Set up mouse orbit controls.
+                    orbitControls.reset();
+                    orbitControls.maxDistance = modelSize * 50;
+                    orbitControls.enableDamping = true;
+                    orbitControls.dampingFactor = 0.07;
+                    orbitControls.rotateSpeed = 1.25;
+                    orbitControls.panSpeed = 1.25;
+                    orbitControls.screenSpacePanning = true;
+
+                    // Position the camera accordingly.
+                    object.position.x = -modelCenter.x;
+                    object.position.y = -modelCenter.y;
+                    object.position.z = -modelCenter.z;
+                    camera.position.copy(modelCenter);
+                    camera.position.x += modelSize * cameraPos.x;
+                    camera.position.y += modelSize * cameraPos.y;
+                    camera.position.z += modelSize * cameraPos.z;
+                    camera.near = modelSize / 100;
+                    camera.far = modelSize * 100;
+                    camera.updateProjectionMatrix();
+                    camera.lookAt(modelCenter);
+
+                    scene.add(object);
+                    this._onWindowResize();
+
+                    mainViewModel.onReady();
+                }, function (error) {
+                    console.error(error);
+                    mainViewModel.showErrorMessage(error.stack);
+                });
+
+                animate();
+            }
+
+            function onWindowResize() {
+                if (!this._enabled) {
+                    return;
+                }
+
+                this._camera.aspect = this._container.offsetWidth / this._container.offsetHeight;
+                this._camera.updateProjectionMatrix();
+
+                this._renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function animate() {
+                if (!this._enabled) {
+                    return;
+                }
+
+                requestAnimationFrame(() => this._animate());
+
+                if (this._mixer) {
+                    this._mixer.update(this._clock.getDelta());
+                }
+
+                this._orbitControls.update();
+                this._renderer.render(this._scene, this._camera);
+
+
+
+
+            }
+
+
+
+            init();
+
+        </script>
+
+    </div>
+
+</body>

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>MotionVI</title>
+<meta charset="UTF-8">
+
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: rgb(15, 15, 15);
+
+      overflow: hidden;
+
+    }
+
+    #c {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .imageToAppear {
+      display: none;
+      opacity: 0;
+    }
+
+    .title,
+    .hint {
+      display: block;
+    }
+
+    .title {
+      font-size: 35px;
+      font: bolder;
+      font-family: monospace;
+      color: ivory;
+    }
+
+    .hint {
+      font-size: 20px;
+      color: ivory;
+
+    }
+
+    .bg-img {
+      /* The image used */
+      /* background-image: <img src="pic_trulli.jpg">; */
+
+      min-height: 380px;
+
+      /* Center and scale the image nicely */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      /* Needed to position the navbar */
+      position: relative;
+    }
+
+    /* Position the navbar container inside the image */
+    .container {
+      position: absolute;
+      margin: 20px;
+      width: auto;
+    }
+
+    .content {
+      z-index: -1;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: rgb(245, 245, 245);
+    }
+
+    .topnav a {
+      float: right;
+      color: #292828;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+      transition: 0.3s;
+    }
+
+    .topnav a:hover {
+      background-color: rgb(245, 245, 245);
+      color: rgb(0, 102, 255);
+    }
+
+    /* .topnav a.active {
+            background-color: rgb(245, 245, 245);
+            color: #292828;
+        } */
+
+    .container2 {
+      width: 180px;
+      height: 60px;
+      position: absolute;
+      left: 40%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container3 {
+      width: 180px;
+      height: 60px;
+      position: absolute;
+      left: 60%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .center {
+      width: 180px;
+      height: 60px;
+      position: absolute;
+    }
+
+    .btn3 {
+      width: 180px;
+      height: 60px;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid #91C9FF;
+      outline: none;
+      transition: 1s ease-in-out;
+
+    }
+
+    svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      fill: none;
+      stroke: #fff;
+      stroke-dasharray: 150 480;
+      stroke-dashoffset: 150;
+      transition: 1s ease-in-out;
+
+    }
+
+    .btn3:hover {
+      transition: 1s ease-in-out;
+      background: #4F95DA;
+    }
+
+    .btn3:hover svg {
+      stroke-dashoffset: -480;
+    }
+
+    .btn3 span {
+      color: white;
+      font-size: 25px;
+      font-weight: 100;
+    }
+
+    .btn {
+      background-color: #d5dbfd;
+      border: 4px solid #d5dbfd;
+      color: white;
+      padding: 21px 42px;
+      text-align: center;
+      font-size: 16px;
+      margin: 4px 2px;
+      opacity: 1;
+      transition: 0.3s;
+      border-radius: 20px;
+      position: absolute;
+      top: 300px;
+      left: 400px;
+      margin: 4px;
+    }
+
+    .btn:hover {
+      opacity: 0.8;
+      border-color: #0099ff;
+    }
+
+
+
+    .btn2 {
+      background-color: #d5dbfd;
+      border: 4px solid #d5dbfd;
+      color: white;
+      padding: 16px 32px;
+      text-align: center;
+      font-size: 16px;
+      margin: 4px 2px;
+      opacity: 1;
+      transition: 0.3s;
+      border-radius: 20px;
+      position: absolute;
+      top: 300px;
+      left: 650px;
+      margin: 4px;
+    }
+
+    .btn2:hover {
+      opacity: 0.8;
+      border-color: #0099ff;
+    }
+
+    #f1_container {
+      position: absolute;
+      margin: 10px auto;
+      width: 450px;
+      height: 281px;
+      z-index: 1;
+      perspective: 1000;
+      left: 10px;
+      top: 500px;
+    }
+
+    #f2_container {
+      position: absolute;
+      margin: 10px auto;
+      width: 450px;
+      height: 281px;
+      z-index: 1;
+      perspective: 1000;
+      left: 500px;
+      top: 650px;
+    }
+
+    #f3_container {
+      position: absolute;
+      margin: 10px auto;
+      width: 450px;
+      height: 281px;
+      z-index: 1;
+      perspective: 1000;
+      left: 10px;
+      top: 900px;
+    }
+
+    #f4_container {
+      position: absolute;
+      margin: 10px auto;
+      width: 450px;
+      height: 281px;
+      z-index: 1;
+      perspective: 1000;
+      left: 500px;
+      top: 1100px;
+    }
+
+    #f1_card {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: all .5s linear;
+    }
+
+    #f2_card {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: all .5s linear;
+    }
+
+    #f3_card {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: all .5s linear;
+    }
+
+    #f4_card {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: all .5s linear;
+    }
+
+    #f1_container:hover #f1_card {
+      transform: rotateY(180deg);
+      box-shadow: -5px 5px 5px #aaa;
+    }
+
+    #f2_container:hover #f2_card {
+      transform: rotateY(180deg);
+      box-shadow: -5px 5px 5px #aaa;
+    }
+
+    #f3_container:hover #f3_card {
+      transform: rotateY(180deg);
+      box-shadow: -5px 5px 5px #aaa;
+    }
+
+    #f4_container:hover #f4_card {
+      transform: rotateY(180deg);
+      box-shadow: -5px 5px 5px #aaa;
+    }
+
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+
+    .face.back {
+      display: block;
+      transform: rotateY(180deg);
+      box-sizing: border-box;
+      padding: 10px;
+      color: white;
+      text-align: center;
+      background-color: #aaa;
+    }
+
+    .fade-in {
+      animation: fadeIn ease 2s;
+      -webkit-animation: fadeIn ease 2s;
+      -moz-animation: fadeIn ease 2s;
+      -o-animation: fadeIn ease 2s;
+      -ms-animation: fadeIn ease 2s;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-moz-keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-webkit-keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-o-keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-ms-keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .fade-bin {
+      animation: fadeIn ease 5s;
+      -webkit-animation: fadeIn ease 5s;
+      -moz-animation: fadeIn ease 5s;
+      -o-animation: fadeIn ease 5s;
+      -ms-animation: fadeIn ease 5s;
+    }
+
+    @keyframes fadebIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-moz-keyframes fadebIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-webkit-keyframes fadebIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-o-keyframes fadebIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @-ms-keyframes fadebIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .slide-in {
+      animation: 1s ease-out 0s 1 slideInFromBelow;
+
+    }
+
+    @keyframes slideInFromBelow {
+      100% {
+        transform: translateY(0%);
+      }
+
+      0% {
+        transform: translateY(-100%);
+      }
+    }
+
+    .float-up {
+      -webkit-animation-duration: 1s;
+      -moz-animation-duration: 1s;
+      -o-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-name: float-up;
+      -moz-animation-name: float-up;
+      -o-animation-name: float-up;
+      animation-name: float-up;
+      -webkit-animation-iteration-count: 1;
+      -moz-animation-iteration-count: 1;
+      -o-animation-iteration-count: 1;
+      animation-iteration-count: 1;
+      -webkit-animation-timing-function: ease-out;
+      -moz-animation-timing-function: ease-out;
+      -o-animation-timing-function: ease-out;
+      animation-timing-function: ease-out;
+      -webkit-animation-fill-mode: forwards;
+      -moz-animation-fill-mode: forwards;
+      -o-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+      position: absolute;
+      top: 500px;
+    }
+
+    .float-sup {
+      -webkit-animation-duration: 1s;
+      -moz-animation-duration: 1s;
+      -o-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-name: float-up;
+      -moz-animation-name: float-up;
+      -o-animation-name: float-up;
+      animation-name: float-up;
+      -webkit-animation-iteration-count: 1;
+      -moz-animation-iteration-count: 1;
+      -o-animation-iteration-count: 1;
+      animation-iteration-count: 1;
+      -webkit-animation-timing-function: ease-out;
+      -moz-animation-timing-function: ease-out;
+      -o-animation-timing-function: ease-out;
+      animation-timing-function: ease-out;
+      -webkit-animation-fill-mode: forwards;
+      -moz-animation-fill-mode: forwards;
+      -o-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+      position: absolute;
+      top: 500px;
+    }
+
+    @-webkit-keyframes float-up {
+      0% {
+        top: 400px;
+        /* opacity:0; */
+        left: 500px;
+      }
+
+      /* 25% {
+        opacity:1;
+    } */
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 500px;
+      }
+    }
+
+    @-webkit-keyframes float-sup {
+      0% {
+        top: 300px;
+        /* opacity:0; */
+        left: 500px;
+      }
+
+      /* 25% {
+        opacity:1;
+    } */
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 100px;
+        left: 500px;
+      }
+    }
+
+    @-moz-keyframes float-up {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 500px;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 500px;
+
+      }
+    }
+
+    @-o-keyframes float-up {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 500px;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 500px;
+      }
+    }
+
+    @-keyframes float-up {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 500px;
+
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 500px;
+      }
+    }
+
+    @-moz-keyframes float-sup {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 200px;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 200px;
+
+      }
+    }
+
+    @-o-keyframes float-sup {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 200px;
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 200px;
+      }
+    }
+
+    @-keyframes float-sup {
+      0% {
+        top: 500px;
+        opacity: 0;
+        left: 200px;
+
+      }
+
+      25% {
+        opacity: 1;
+      }
+
+      /* 35% {
+        top:-20px;
+    } */
+      100% {
+        top: 300px;
+        left: 200px;
+      }
+    }
+
+    .my-move {
+      animation: mymove 5s infinite;
+    }
+
+    @keyframes mymove {
+      from {
+        top: 500px;
+      }
+
+      to {
+        top: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+    document.body.className = 'fade';
+  </script>
+
+  <!-- Navbar -->
+
+  <div class="topnav">
+    <div class="fusion-logo" data-margin-top="10px" data-margin-bottom="0px" data-margin-left="0px"
+      data-margin-right="0px" style="margin-top: 10px; margin-bottom: 0px;">
+      <a class="fusion-logo-link" href="https://agentvi.com/">
+
+        <!-- <script data-pagespeed-no-defer="">//<![CDATA[
+      (function(){for(var g="function"==typeof Object.defineProperties?Object.defineProperty:function(b,c,a){if(a.get||a.set)throw new TypeError("ES3 does not support getters and setters.");b!=Array.prototype&&b!=Object.prototype&&(b[c]=a.value)},h="undefined"!=typeof window&&window===this?this:"undefined"!=typeof global&&null!=global?global:this,k=["String","prototype","repeat"],l=0;l<k.length-1;l++){var m=k[l];m in h||(h[m]={});h=h[m]}var n=k[k.length-1],p=h[n],q=p?p:function(b){var c;if(null==this)throw new TypeError("The 'this' value for String.prototype.repeat must not be null or undefined");c=this+"";if(0>b||1342177279<b)throw new RangeError("Invalid count value");b|=0;for(var a="";b;)if(b&1&&(a+=c),b>>>=1)c+=c;return a};q!=p&&null!=q&&g(h,n,{configurable:!0,writable:!0,value:q});var t=this;function u(b,c){var a=b.split("."),d=t;a[0]in d||!d.execScript||d.execScript("var "+a[0]);for(var e;a.length&&(e=a.shift());)a.length||void 0===c?d[e]?d=d[e]:d=d[e]={}:d[e]=c};function v(b){var c=b.length;if(0<c){for(var a=Array(c),d=0;d<c;d++)a[d]=b[d];return a}return[]};function w(b){var c=window;if(c.addEventListener)c.addEventListener("load",b,!1);else if(c.attachEvent)c.attachEvent("onload",b);else{var a=c.onload;c.onload=function(){b.call(this);a&&a.call(this)}}};var x;function y(b,c,a,d,e){this.h=b;this.j=c;this.l=a;this.f=e;this.g={height:window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight,width:window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth};this.i=d;this.b={};this.a=[];this.c={}}function z(b,c){var a,d,e=c.getAttribute("data-pagespeed-url-hash");if(a=e&&!(e in b.c))if(0>=c.offsetWidth&&0>=c.offsetHeight)a=!1;else{d=c.getBoundingClientRect();var f=document.body;a=d.top+("pageYOffset"in window?window.pageYOffset:(document.documentElement||f.parentNode||f).scrollTop);d=d.left+("pageXOffset"in window?window.pageXOffset:(document.documentElement||f.parentNode||f).scrollLeft);f=a.toString()+","+d;b.b.hasOwnProperty(f)?a=!1:(b.b[f]=!0,a=a<=b.g.height&&d<=b.g.width)}a&&(b.a.push(e),b.c[e]=!0)}y.prototype.checkImageForCriticality=function(b){b.getBoundingClientRect&&z(this,b)};u("pagespeed.CriticalImages.checkImageForCriticality",function(b){x.checkImageForCriticality(b)});u("pagespeed.CriticalImages.checkCriticalImages",function(){A(x)});function A(b){b.b={};for(var c=["IMG","INPUT"],a=[],d=0;d<c.length;++d)a=a.concat(v(document.getElementsByTagName(c[d])));if(a.length&&a[0].getBoundingClientRect){for(d=0;c=a[d];++d)z(b,c);a="oh="+b.l;b.f&&(a+="&n="+b.f);if(c=!!b.a.length)for(a+="&ci="+encodeURIComponent(b.a[0]),d=1;d<b.a.length;++d){var e=","+encodeURIComponent(b.a[d]);131072>=a.length+e.length&&(a+=e)}b.i&&(e="&rd="+encodeURIComponent(JSON.stringify(B())),131072>=a.length+e.length&&(a+=e),c=!0);C=a;if(c){d=b.h;b=b.j;var f;if(window.XMLHttpRequest)f=new XMLHttpRequest;else if(window.ActiveXObject)try{f=new ActiveXObject("Msxml2.XMLHTTP")}catch(r){try{f=new ActiveXObject("Microsoft.XMLHTTP")}catch(D){}}f&&(f.open("POST",d+(-1==d.indexOf("?")?"?":"&")+"url="+encodeURIComponent(b)),f.setRequestHeader("Content-Type","application/x-www-form-urlencoded"),f.send(a))}}}function B(){var b={},c;c=document.getElementsByTagName("IMG");if(!c.length)return{};var a=c[0];if(!("naturalWidth"in a&&"naturalHeight"in a))return{};for(var d=0;a=c[d];++d){var e=a.getAttribute("data-pagespeed-url-hash");e&&(!(e in b)&&0<a.width&&0<a.height&&0<a.naturalWidth&&0<a.naturalHeight||e in b&&a.width>=b[e].o&&a.height>=b[e].m)&&(b[e]={rw:a.width,rh:a.height,ow:a.naturalWidth,oh:a.naturalHeight})}return b}var C="";u("pagespeed.CriticalImages.getBeaconData",function(){return C});u("pagespeed.CriticalImages.Run",function(b,c,a,d,e,f){var r=new y(b,c,a,e,f);x=r;d&&w(function(){window.setTimeout(function(){A(r)},0)})});})();pagespeed.CriticalImages.Run('/mod_pagespeed_beacon','http://agentvi.com/products/innovi/','8Xxa2XQLv9',true,false,'nicfHOOt2aI');
+      //]]></script><img src="https://agentvi.com/wp-content/uploads/2020/03/Agent_Vi_2020_230x70.png" srcset="https://agentvi.com/wp-content/uploads/2020/03/Agent_Vi_2020_230x70.png 1x, https://agentvi.com/wp-content/uploads/2020/02/Agent_Vi_2020-e1583332553547.png 2x" width="230" height="70" style="max-height:70px;height:auto;" alt="Agent Vi Logo" data-retina_logo_url="https://agentvi.com/wp-content/uploads/2020/02/Agent_Vi_2020-e1583332553547.png" class="fusion-standard-logo" data-pagespeed-url-hash="1249378215" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+      --></a>
+    </div>
+    <source>
+    <!-- <div style="padding-left:10px"> -->
+
+    <img src="https://agentvi.com/wp-content/uploads/2020/03/Agent_Vi_2020_230x70.png" srcset="https://agentvi.com/wp-content/uploads/2020/03/Agent_Vi_2020_230x70.png 1x, 
+      https://agentvi.com/wp-content/uploads/2020/02/Agent_Vi_2020-e1583332553547.png 2x" width="230" height="70"
+      style="max-height: 70px; height: 66px;" alt="Agent Vi Logo"
+      data-retina_logo_url="https://agentvi.com/wp-content/uploads/2020/02/Agent_Vi_2020-e1583332553547.png"
+      class="fusion-standard-logo" data-pagespeed-url-hash="1249378215"
+      onload="pagespeed.CriticalImages.checkImageForCriticality(this);" data-logo-height="66" data-logo-width="219">
+    </a>
+    <!-- </div> -->
+    <a href="#Innovi Trial">Innovi Trial</a>
+    <a href="#Support">Support</a>
+    <a href="#Partners">Partners</a>
+    <a href="#Industry">Industry</a>
+    <a href="#Products">Products</a>
+    <a href="#Company">Company</a>
+    <a href="#Home">Home</a>
+
+  </div>
+  <div class="float-up">
+    <div class="fade-in">
+      <!-- <div class="animate__animated animate__fadeInUp"> -->
+      <div class="container2">
+        <div class="center">
+          <button class="btn3">
+            <svg width="180px" height="60px" viewBox="0 0 180 60" class="border">
+              <polyline points="179,1 179,59 1,59 1,1 179,1" class="bg-line" />
+              <polyline points="179,1 179,59 1,59 1,1 179,1" class="hl-line" />
+            </svg>
+            <span>savVi</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- </div>
+  </div> -->
+      <!-- <div class="float-sup">
+<div class="fade-in"> -->
+
+      <div class="container3" style="left: 425px;">
+        <div class="center">
+          <button class="btn3">
+            <svg width="180px" height="60px" viewBox="0 0 180 60" class="border">
+              <polyline points="179,1 179,59 1,59 1,1 179,1" class="bg-line" />
+              <polyline points="179,1 179,59 1,59 1,1 179,1" class="hl-line" />
+            </svg>
+            <span>innoVi</span>
+          </button>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+  </div>
+
+  <div class="fade-bin">
+    <div><span class="title" style="text-align:center; top: 400px; position: relative;">A comprehensive video analytics
+        platform </span></div>
+
+    <div><span class="hint" style="text-align: center; top: 425px; position: relative;">that provides real time event
+        detection and video search functionality. </span> </div>
+  </div>
+
+
+  <!-- <div>
+    <button class="btn"><img height="30" ; width="100" ; src="\savVi-logo.png"></button>
+  </div>
+  <div>
+    <button class="btn2"><img height="40" ; width="120" ; src="\innovilogo.png"></button>
+  </div>
+-->
+  <script type="module" src="/three.js-master/build/three.min.js"></script>
+  <script type="module" src="https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js"></script>
+  <script type="module" src="https://unpkg.com/three/examples/jsm/controls/OrbitControls.js"></script>
+
+
+  <!-- <script type="module" src="./three.js-master/three.js-master/build/three.min.js"></script>
+  <script type="module" src="three.js-master/three.js-master/examples/jsm/loaders/GLTFLoader.js"></script> 
+  <script type="module" src="three.js-master/three.js-master/examples/jsm/controls/OrbitControls.js"></script> -->
+  <div>
+
+    <canvas id="c"></canvas>
+    <div>
+      <script type="module">
+        import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/build/three.module.js';
+        import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/controls/OrbitControls.js';
+        import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r122/examples/jsm/loaders/GLTFLoader.js';
+        //import { applyQuaternion } from '/three.js-master/src/math/Quaternion.js';
+        // import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        // import { OrbitControls } from "./three.js-master/examples/jsm/controls/OrbitControls.js";
+        // import { GLTFLoader } from "./three.js-master/examples/jsm/loaders/GLTFLoader.js";
+
+        function main() {
+          const canvas = document.querySelector('#c');
+          const renderer = new THREE.WebGLRenderer({ canvas });
+
+          const fov = 45;
+          const aspect = 2;  // the canvas default
+          const near = 0.1;
+          const far = 100;
+          const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+          camera.position.set(0, 10, 20);
+
+          const controls = new OrbitControls(camera, canvas);
+          controls.target.set(0, 5, 0);
+          controls.update();
+
+          const scene = new THREE.Scene();
+          scene.background = new THREE.Color('black');
+
+          const axesHelper = new THREE.AxesHelper(20);
+          scene.add(axesHelper);
+
+          // {
+          //     const planeSize = 40;
+
+          //     const loader = new THREE.TextureLoader();
+          //     const texture = loader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
+          //     texture.wrapS = THREE.RepeatWrapping;
+          //     texture.wrapT = THREE.RepeatWrapping;
+          //     texture.magFilter = THREE.NearestFilter;
+          //     const repeats = planeSize / 2;
+          //     texture.repeat.set(repeats, repeats);
+
+          //     const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
+          //     const planeMat = new THREE.MeshPhongMaterial({
+          //         map: texture,
+          //         side: THREE.DoubleSide,
+          //     });
+          //     const mesh = new THREE.Mesh(planeGeo, planeMat);
+          //     mesh.rotation.x = Math.PI * -.5;
+          //     scene.add(mesh);
+          // }
+
+          {
+            const skyColor = 0xB1E1FF;  // light blue
+            const groundColor = 0xB97A20;  // brownish orange
+            const intensity = 1;
+            const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+            scene.add(light);
+          }
+
+          {
+            const color = 0xFFFFFF;
+            const intensity = 1;
+            const light = new THREE.DirectionalLight(color, intensity);
+            light.position.set(5, 10, 2);
+            scene.add(light);
+            scene.add(light.target);
+          }
+
+          function frameArea(sizeToFitOnScreen, boxSize, boxCenter, camera) {
+            const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+            const halfFovY = THREE.MathUtils.degToRad(camera.fov * .5);
+            const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
+            // compute a unit vector that points in the direction the camera is now
+            // in the xz plane from the center of the box
+            const direction = (new THREE.Vector3())
+              .subVectors(camera.position, boxCenter)
+              .multiply(new THREE.Vector3(1, 0, 1))
+              .normalize();
+
+            // move the camera to a position distance units way from the center
+            // in whatever direction the camera was from the center already
+            camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
+            camera.position.z = 10;
+            //camera.rotation.z = 0;
+
+            // var x_axis = new THREE.Vector3(1, 0, 0);
+            // var quaternion = new THREE.Quaternion;
+            // camera.position.applyQuaternion(quaternion.setFromAxisAngle(x_axis, rotation_speed));
+            // camera.up.applyQuaternion(quaternion.setFromAxisAngle(x_axis, rotation_speed));
+
+
+
+            // pick some near and far values for the frustum that
+            // will contain the box.
+            camera.near = boxSize / 100;
+            camera.far = boxSize * 100;
+
+            camera.updateProjectionMatrix();
+
+            // point the camera to look at the center of the box
+            camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
+          }
+
+          {
+            const gltfLoader = new GLTFLoader();
+            gltfLoader.load('scene.gltf', (gltf) => {
+              const root = gltf.scene;
+              root.position.set(0, 0, 0);
+              const rootAxesHelper = new THREE.AxesHelper(20);
+              root.add(rootAxesHelper);
+
+              scene.add(root);
+
+              console.log(root);
+              console.log(scene);
+
+
+              // compute the box that contains all the stuff
+              // from root and below
+              const box = new THREE.Box3().setFromObject(root);
+
+              const boxSize = box.getSize(new THREE.Vector3()).length();
+              const boxCenter = box.getCenter(new THREE.Vector3());
+              //const rootCenter = root.getCenter(new THREE.Vector3());
+              //boxSize = (window.innerWidth / boxSize.length()) * boxSize;
+              //boxSize = (window.outerWidth / boxSize.length()) * boxSize;
+
+              // set the camera to frame the box
+              frameArea(boxSize * 21.5, boxSize, boxCenter, camera);
+
+              // update the Trackball controls to handle the new size
+              controls.maxDistance = boxSize * 10;
+              controls.target.copy(boxCenter);
+              controls.update();
+
+              window.addEventListener("mousemove", onmousemove, false);
+
+              var plane = new THREE.Plane(new THREE.Vector3(0, 1, 1), 0); // it's up to you how you will create THREE.Plane(), there are several methods
+              var raycaster = new THREE.Raycaster(); //for reuse
+              var mouse = new THREE.Vector2();       //for reuse
+              var intersectPoint = new THREE.Vector3(0, 0, 0);
+              //plane.material.side = THREE.DoubleSide;
+
+              //root.position.set(new THREE.Vector3(100, 500, 1));
+              root.position.set(new THREE.Vector3(5000, 5000, 1));
+              var pivot = new THREE.Object3D();
+              pivot.add(root);
+
+
+
+              let arrow = new THREE.ArrowHelper();
+
+              function onmousemove(event) {
+                //get mouse coordinates
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                //camera.rotation.z = 0;
+
+                raycaster.setFromCamera(mouse, camera);//set raycaster
+                raycaster.ray.intersectPlane(plane, intersectPoint); // find the point of intersection
+                root.lookAt(intersectPoint); // face our arrow to this point
+                //car.target.set(0,3,0);
+                //car.up(0,0,0);
+                //car.rotationY.set(20 / 180 * Math.PI);
+
+                //scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
+
+                scene.remove(arrow);
+                arrow = new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000);
+                scene.add(arrow);
+              }
+            });
+          }
+
+          function resizeRendererToDisplaySize(renderer) {
+            const canvas = renderer.domElement;
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            const needResize = canvas.width !== width || canvas.height !== height;
+            if (needResize) {
+              renderer.setSize(width, height, false);
+            }
+            return needResize;
+          }
+
+          //let arrow;
+
+          function render() {
+            if (resizeRendererToDisplaySize(renderer)) {
+              const canvas = renderer.domElement;
+              camera.aspect = canvas.clientWidth / canvas.clientHeight;
+              camera.updateProjectionMatrix();
+            }
+
+
+            // scene.remove(arrow);
+            // arrow = new THREE.ArrowHelper(camera.getWorldDirection(), camera.getWorldPosition(), 100, Math.random() * 0xffffff);
+            // scene.add(arrow);
+
+            renderer.render(scene, camera);
+
+            requestAnimationFrame(render);
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        main();
+
+
+      </script>
+
+    </div>
+
+
+    <!-- innoVi provides a broad set of highly sophisticated AI-powered video analytics capabilities for real-time detection of events of interest, object tracking, and quick extraction of events and data from recorded video. -->
+
+    <script>
+      $("#wantedonscroll").scroll(function () {
+        $("#imageToAppear").fadeIn();
+      }
+
+      );
+    </script>
+
+    <!-- <div style="top: 700px; position: relative;">
+  <div id="wantedonscroll">
+  <div id="imageToAppear"><img src="/pic1.PNG"></div>
+  </div></div>
+   -->
+
+
+
+
+
+
+    <!-- </div>
+  <div id="f1_container">
+
+    <div id="f1_card" class="shadow">
+      <div class="front face">
+        <img src="/Images/innovi1.PNG" />
+      </div>
+      <div class="back face center">
+        <p>Meets the intrusion detection and monitoring needs of organizations and security service providers. </p>
+        <p></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="f2_container">
+
+    <div id="f2_card" class="shadow">
+      <div class="front face">
+        <img src="/Images/innovi2.PNG" />
+      </div>
+      <div class="back face center">
+        <p>Replaces the cumbersome, labor-instensive process of manual video search with automatic, rapid search and
+          analysis of stored video.</p>
+        <p></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="f3_container">
+
+    <div id="f3_card" class="shadow">
+      <div class="front face">
+        <img src="/Images/innovi3.PNG" />
+      </div>
+      <div class="back face center">
+        <p>Designed to meet the challenges posed by environments of any size, innoVi Enterprise empowers security teams
+          with a comprehensive suite of Agent Vi's AI-powered video analystics capabilities.</p>
+        <p></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="f4_container">
+
+    <div id="f4_card" class="shadow">
+      <div class="front face">
+        <img src="/Images/innovi4.PNG" />
+      </div>
+      <div class="back face center">
+        <p>Tailored to the specific requirements of large-scale installations by providing the full suite of innoVi's
+          powerful bideo analytics capabilities.</p>
+        <p></p>
+      </div>
+    </div>
+  </div> -->
+
+
+
+    <!-- <script>
+    document.addEventListener("DOMContentLoaded", function (e) {
+      document.body.className = '';
+    });
+  </script> -->
+
+
+
+</body>
+
+</html>

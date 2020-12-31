@@ -1,0 +1,268 @@
+<div id="threeContainer"></div>
+<script type="module">
+    let car, cube, rootPath;
+
+
+    import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+    import { OrbitControls } from "./three.js-master/examples/jsm/controls/OrbitControls.js";
+    import { GLTFLoader } from "./three.js-master/examples/jsm/loaders/GLTFLoader.js";
+    import { Mesh } from "./three.js-master/src/objects/Mesh.js";
+    import { RGBELoader } from "./three.js-master/examples/jsm/loaders/RGBELoader.js";
+    import { DRACOLoader } from "./three.js-master/examples/jsm/loaders/DRACOLoader.js";
+
+    // import {OrbitControls} from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+    // import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
+    function init(rootpath, gltfContent) {
+
+      var container = document.getElementById('threeContainer');
+      window.container = container;
+
+      var scene = new THREE.Scene();
+      window.scene = scene;
+
+      var camera = new THREE.PerspectiveCamera(45, window.offsetWidth / window.offsetHeight, 1e-5, 1e10);
+      window.camera = camera;
+      scene.add(camera);
+
+      let hlight = new THREE.AmbientLight(0x404040, .1); //This light globally illuminates all objects in the scene equally.This light cannot be used to cast shadows as it does not have a direction.
+      scene.add(hlight);
+
+      let directionalLight = new THREE.DirectionalLight(0xffffff, 1); //A light that gets emitted in a specific direction and can cast shadows. This light will behave as though it is infinitely far away and the rays produced from it are all parallel. The common use case for this is to simulate daylight; the sun is far enough away that its position can be considered to be infinite, and all light rays coming from it are parallel.
+      directionalLight.position.set(0, 1, 0);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+      let light = new THREE.PointLight(0xc4c4c4, .25); //A light that gets emitted from a single point in all directions and can cast shadows. A common use case for this is to replicate the light emitted from a bare lightbulb.
+      light.position.set(0, 300, 500);
+      scene.add(light);
+      let light2 = new THREE.PointLight(0xc4c4c4, .05);
+      light2.position.set(500, 100, 0);
+      scene.add(light2);
+      let light3 = new THREE.PointLight(0xc4c4c4, .25);
+      light3.position.set(0, 100, -500);
+      scene.add(light3);
+      let light4 = new THREE.PointLight(0xc4c4c4, .25);
+      light4.position.set(-500, 300, 500);
+      scene.add(light4);
+
+      var renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+      window.renderer = renderer;
+      renderer.setClearColor(0x222222);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+
+      document.body.appendChild(renderer.domElement);
+
+      var loader = new GLTFLoader();
+
+      var cameraPos = new THREE.Vector3(-0.2, 0.4, 1.4);
+      var orbitControls = new OrbitControls(camera, renderer.domElement);
+      window.orbitControls = orbitControls;
+
+      loader.load('scene.gltf', data => {
+        //loader.parse(gltfContent, rootPath, data => {
+        var gltf = data;
+        var object = gltf.scene;
+        function applyBackground(showBackground) {
+          scene.background = showBackground ? envMap : null;
+          console.log("yo");
+        }
+        //applyBackground();
+
+        // Center the model on screen based on bounding box information.
+        object.updateMatrixWorld();
+        var boundingBox = new THREE.Box3().setFromObject(object);
+        var modelSizeVec3 = new THREE.Vector3();
+        boundingBox.getSize(modelSizeVec3);
+        var modelSize = modelSizeVec3.length();
+        var modelCenter = new THREE.Vector3();
+        boundingBox.getCenter(modelCenter);
+
+        // Set up mouse orbit controls.
+        orbitControls.reset();
+        orbitControls.maxDistance = modelSize * 50;
+        orbitControls.enableDamping = true;
+        orbitControls.dampingFactor = 0.07;
+        orbitControls.rotateSpeed = 1.25;
+        orbitControls.panSpeed = 1.25;
+        orbitControls.screenSpacePanning = true;
+
+        // Position the camera accordingly.
+        object.position.x = -modelCenter.x;
+        object.position.y = -modelCenter.y;
+        object.position.z = -modelCenter.z;
+        camera.position.copy(modelCenter);
+        camera.position.x += modelSize * cameraPos.x;
+        camera.position.y += modelSize * cameraPos.y;
+        camera.position.z += modelSize * cameraPos.z;
+        camera.near = modelSize / 100;
+        camera.far = modelSize * 100;
+        camera.updateProjectionMatrix();
+        camera.lookAt(modelCenter);
+
+        scene.add(object);
+        onWindowResize();
+
+        //mainViewModel.onReady();
+      }, function (error) {
+        console.error(error);
+        //mainViewModel.showErrorMessage(error.stack);
+      });
+    }
+
+    function onWindowResize() {
+      if (!enabled) {
+        return;
+      }
+
+
+      camera.aspect = container.offsetWidth / container.offsetHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      if (!enabled) {
+        return;
+      }
+
+      requestAnimationFrame(() => animate());
+      // if (mixer) {
+      //     mixer.update(clock.getDelta());
+      // }
+      orbitControls.update();
+      renderer.render(scene, camera);
+
+    }
+
+    function startPreview() {
+      let resizeHandler = () => onWindowResize();
+      let enabled = true;
+      window.enabled = enabled;
+      init();
+      //init(rootPath, gltfContent);
+      animate();
+      window.addEventListener('resize', resizeHandler, false);
+    }
+
+    startPreview();
+
+    console.log("hi")
+    // import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+    // scene = new THREE.Scene(); //allow you to set up what and where is to be rendered by three.js. This is where you place objects, lights and cameras.
+    // let helper = new THREE.AxesHelper(500);
+    // scene.add(helper);
+    // helper.position.set(-250, 100, 0);
+    // console.log(scene);
+    // scene.background = new THREE.Color(0x0f0f0f);
+
+    //var changePos = new THREE.Vector3(0, 1, 0);
+    // camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);// projection mode that mimics human eye.Camera frustum: fov- vertical field of view. aspect-aspect ratio. near-near plane. far-far plane. view frustum is the region of space in the modeled world that may appear on the screen; it is the field of view of a perspective virtual camera system.
+    // camera.rotation.y = 45 / 180 * Math.PI; //sets rotation on y axis
+    // camera.position.x = 800;
+    // camera.position.y = 100;
+    // camera.position.z = 2000;
+
+    // renderer = new THREE.WebGLRenderer({ antialias: true }); //sets antialias to true - removes aliasing = removes jagged squares creating "staircase effect" (fake resolution - to look smoother and higher resolution without updating the display resolution)
+    // renderer.setSize(window.innerWidth, window.innerHeight); //sets the size of the window - renders anything within the window
+    // document.body.appendChild(renderer.domElement); // creates domElement ("blank canvas")
+
+    // let controls = new OrbitControls(camera, renderer.domElement); //takes object and domElemnent and allows the camera to orbit around target
+    // controls.addEventListener('change', renderer);
+    //controls.target.set(aabb);///////////
+
+
+
+
+
+    // var cubeGeometry = new THREE.BoxGeometry(100, 100, 100);
+    // var cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x1ec876 });
+    // cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+    // cube.position.set(-250, 100, 0);
+    // scene.add(cube);
+    // renderer = new THREE.WebGLRenderer({antialias:true});
+    // renderer.setSize(window.innerWidth,window.innerHeight);
+    // document.body.appendChild(renderer.domElement);
+
+    // let loader = new GLTFLoader();// create loader used to load 3d object
+    // loader.load('scene.gltf', function (gltf) { //load gltf resource (resource, function run once resource is loaded)
+    //   car = gltf.scene.children[0];
+    //   car.scale.set(50, 50, 50);
+    //   //car.position.set();
+    //   car.position.set(-300, 0, 100);
+    //   //car.rotation.x = Math.PI / 1;
+    //   car.target = new THREE.Vector3(-300, 0, 100);
+
+      //     var aabb = new THREE.Box3().setFromObject(gltf.scene);
+      // aabb.getCenter(controls.target);
+      // controls.update();
+      //car.position(changePos);
+      //car.applyAxisAngle();
+      //car.set.rotationFromAxisAngle();
+      //car.rotateOnWorldAxis();
+      //
+    //   scene.add(gltf.scene);
+    //   animate();
+    // });
+
+
+    // }
+    // function animate() {
+    //   renderer.render(scene, camera); //displays scenes - 3d object
+    //   requestAnimationFrame(animate);//used in webxr projects instead of set animation loop. Calls a function at every available frame
+    // }
+    // window.addEventListener("mousemove", onmousemove, false);
+
+
+
+    // var plane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0); // it's up to you how you will create THREE.Plane(), there are several methods
+    // var raycaster = new THREE.Raycaster(); //for reuse
+    // var mouse = new THREE.Vector2();       //for reuse
+    // var intersectPoint = new THREE.Vector3(0, 0, 0);//for reuse
+    // //raycaster.set((0,0,0), new THREE.Vector3(0, 0, 1));
+
+
+
+
+    // window.addEventListener('resize', onWindowResize, false)
+    // function onWindowResize() {
+    //   camera.aspect = window.innerWidth / window.innerHeight
+    //   camera.updateProjectionMatrix()
+    //   renderer.setSize(window.innerWidth, window.innerHeight)
+    //   render()
+    // }
+
+    // function render() {
+    //   renderer.render(scene, camera)
+    // }
+
+    // var geometry = new THREE.PlaneGeometry(1, 0, 0);
+    // var material = new THREE.MeshNormalMaterial();
+    // var material2 = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+
+    // var mesh = new THREE.Mesh();
+    // mesh = gltf.scene.children[1];
+    // mesh.position.set(-300, 100, 0);
+    // mesh.scale.set(50, 50, 50);
+
+    // function onmousemove(event) {
+    //   //get mouse coordinates
+    //   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    //   raycaster.setFromCamera(mouse, camera);//set raycaster
+    //   raycaster.ray.intersectPlane(plane, intersectPoint); // find the point of intersection
+    //   //car.lookAt(intersectPoint); // face our arrow to this point
+      //car.target.set(0,3,0);
+      //car.up(0,0,0);
+      //car.rotationY.set(20 / 180 * Math.PI);
+   // }
+    //init(); //create event listener for page resize
+  //https://ngrok.com/  - allows to run code from local to puclic without web hosting - quickyl show client work that has been done (privately) - portphilio
+  //https://developer.mozilla.org/en-US/docs/Web/API/Window/resize_event
+  //https://www.w3schools.com/jsref/event_onresize.asp
+  </script>
+</div>
+

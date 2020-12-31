@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script> -->
+</head>
+
+<body>
+    <script type="module" src="three.min.js"></script>
+    <script type="module" src="https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js"></script>
+    <script type="module" src="https://unpkg.com/three/examples/jsm/controls/OrbitControls.js"></script>
+
+
+    <!-- <script src="https://unpkg.com/three/build/three.module.js"></script> -->
+    <script type="module">
+        let scene, camera, renderer;
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        import { OrbitControls } from "./three.js-master/examples/jsm/controls/OrbitControls.js";
+        import { GLTFLoader } from "./three.js-master/examples/jsm/loaders/GLTFLoader.js";
+        import { ConeGeometry } from "./three.js-master/src/geometries/ConeGeometry.js";
+        
+        import { MeshNormalMaterial } from "./three.js-master/src/materials/MeshNormalMaterial.js";
+        
+        import { Mesh } from "./three.js-master/src/objects/Mesh.js";
+        
+        import { Vector3 } from "./three.js-master/src/math/Vector3.js";
+        import { Plane } from "./three.js-master/src/math/Plane.js";
+        import { Raycaster } from "./three.js-master/src/core/Raycaster.js";
+        import { Vector2 } from "./three.js-master/src/math/Vector2.js";
+        
+        // import {OrbitControls} from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+        // import { GLTFLoader } from 'https://unpkg.com/three/examples/jsm/loaders/GLTFLoader.js';
+        function init() {
+
+            console.log("hi")
+            // import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+            scene = new THREE.Scene(); //allow you to set up what and where is to be rendered by three.js. This is where you place objects, lights and cameras.
+            scene.background = new THREE.Color(0x0f0f0f);
+
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 5000);// projection mode that mimics human eye.Camera frustum: fov- vertical field of view. aspect-aspect ratio. near-near plane. far-far plane. view frustum is the region of space in the modeled world that may appear on the screen; it is the field of view of a perspective virtual camera system.
+            camera.rotation.y = 45 / 180 * Math.PI; //sets rotation on y axis
+            camera.position.x = 800;
+            camera.position.y = 100;
+            camera.position.z = 1000;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true }); //sets antialias to true - removes aliasing = removes jagged squares creating "staircase effect" (fake resolution - to look smoother and higher resolution without updating the display resolution)
+            renderer.setSize(window.innerWidth, window.innerHeight); //sets the size of the window - renders anything within the window
+            document.body.appendChild(renderer.domElement); // creates domElement ("blank canvas")
+
+            //let controls = new OrbitControls(camera, renderer.domElement); //takes object and domElemnent and allows the camera to orbit around target
+            // controls.addEventListener('change', renderer);
+
+            let hlight = new THREE.AmbientLight(0x404040, .1); //This light globally illuminates all objects in the scene equally.This light cannot be used to cast shadows as it does not have a direction.
+            scene.add(hlight);
+
+            let directionalLight = new THREE.DirectionalLight(0xffffff, 1); //A light that gets emitted in a specific direction and can cast shadows. This light will behave as though it is infinitely far away and the rays produced from it are all parallel. The common use case for this is to simulate daylight; the sun is far enough away that its position can be considered to be infinite, and all light rays coming from it are parallel.
+            directionalLight.position.set(0, 1, 0);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            let light = new THREE.PointLight(0xc4c4c4, .25); //A light that gets emitted from a single point in all directions and can cast shadows. A common use case for this is to replicate the light emitted from a bare lightbulb.
+            light.position.set(0, 300, 500);
+            scene.add(light);
+            let light2 = new THREE.PointLight(0xc4c4c4, .05);
+            light2.position.set(500, 100, 0);
+            scene.add(light2);
+            let light3 = new THREE.PointLight(0xc4c4c4, .25);
+            light3.position.set(0, 100, -500);
+            scene.add(light3);
+            let light4 = new THREE.PointLight(0xc4c4c4, .25);
+            light4.position.set(-500, 300, 500);
+            scene.add(light4);
+
+            let loader = new GLTFLoader();// create loader used to load 3d object
+            loader.load('scene.gltf', function (gltf) { //load gltf resource (resource, function run once resource is loaded)
+                let vc = gltf.scene.children[0];
+                vc.scale.set(50, 50, 50);
+                scene.add(gltf.scene);
+                animate();
+            });
+
+            var coneGeom = new THREE.ConeGeometry(0.125, 1, 4);
+            coneGeom.translate(0, .5, 0);
+            coneGeom.rotateX(Math.PI / 2); // 
+            var coneMat = new THREE.MeshNormalMaterial();
+            var cone = new THREE.Mesh(coneGeom, coneMat);
+            vc.lookAt(new THREE.Vector3(0, 1, 0));
+            scene.add(vc);
+
+            window.addEventListener("mousemove", onmousemove, false);
+
+            var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0); // it's up to you how you will create THREE.Plane(), there are several methods
+            var raycaster = new THREE.Raycaster(); //for reuse
+            var mouse = new THREE.Vector2();       //for reuse
+            var intersectPoint = new THREE.Vector3();//for reuse
+
+            function onmousemove(event) {
+                //get mouse coordinates
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);//set raycaster
+                raycaster.ray.intersectPlane(plane, intersectPoint); // find the point of intersection
+                vc.lookAt(intersectPoint); // face our arrow to this point
+            }
+
+            // renderer = new THREE.WebGLRenderer({antialias:true});
+            // renderer.setSize(window.innerWidth,window.innerHeight);
+            // document.body.appendChild(renderer.domElement);
+
+            
+        }
+        function animate() {
+            renderer.render(scene, camera); //displays scenes - 3d object
+            requestAnimationFrame(animate);//used in webxr projects instead of set animation loop. Calls a function at every available frame
+        }
+        init();
+    </script>
+
+</body>
+
+</html>
